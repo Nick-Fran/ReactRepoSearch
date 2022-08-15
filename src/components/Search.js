@@ -100,8 +100,10 @@ function Search() {
   const [error, setError] = useState(false);
   const [page, setPage] = useState(1);
   const [queryParam, setQueryParam] = useState();
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   const MaxElementsPerPage = 5;
+  const MaxNumOfPages = Math.ceil(data?.limit / MaxElementsPerPage);
 
   //get params from url
   let { q } = useParams();
@@ -110,12 +112,12 @@ function Search() {
     () => {
       setLoading(true);
       setQueryParam(param)
-      console.log("Search|fetchData|q retrieved is:", q)
+      //console.log("Search|fetchData|q retrieved is:", q)
 
       let url = `https://dummyjson.com/products`;
 
       if(param){
-        console.log("Search|fetchData|param value:", param);
+        //console.log("Search|fetchData|param value:", param);
         url = `https://dummyjson.com/products/search?q=` + encodeURIComponent(param);
       }
 
@@ -136,14 +138,17 @@ function Search() {
   );
 
   const handleHomeButton = () => {
-    console.log("Search|handleHomeButton");
+    //console.log("Search|handleHomeButton");
     param = ""
+    setPage(1);
+    setCurrentIndex(0);
     fetchData();
   }
 
   const handleSubmit = (input) => {
     setPage(1);
-    console.log("Search|handleSubmit|input is:", input);
+    setCurrentIndex(0);
+    //console.log("Search|handleSubmit|input is:", input);
     if(input){
       param = input;
     }else{
@@ -154,13 +159,35 @@ function Search() {
   const handlePagination = (direction) => {
     let offset = page * 31;
     let results = data.limit;
+    let newPage;
     if (direction === "prev" && page >= 2) {
-      setPage(page - 1);
+      newPage = page - 1
     }
-    if (direction === "next" && page > 0 && offset < results) {
-      setPage(page + 1);
+    else if (direction === "next" && page < MaxNumOfPages) {
+      newPage = page + 1
     }
+    setPage(newPage);
+    setCurrentIndex((newPage - 1) * MaxElementsPerPage);
   };
+
+  const PrevPageButton = page > 1 ?
+    (<Icon onClick={() => handlePagination("prev")}>
+      <LeftIcon />
+      Prev
+    </Icon>) : null;
+
+  const NextPageButton = page < MaxNumOfPages ?
+    (<Icon onClick={() => handlePagination("next")}>
+      Next
+      <RightIcon />
+    </Icon>) : null;
+
+  const PaginationElement = data?.limit > 0 ?
+    (<Pagination>
+      {PrevPageButton}
+      Page {page} of {MaxNumOfPages}
+      {NextPageButton}
+    </Pagination>) : null;
 
   useEffect(
     () => {
@@ -192,18 +219,11 @@ function Search() {
               <SearchResults
                 fetchData={fetchData}
                 data={data}
+                currentIndex={currentIndex}
+                page={page}
+                MaxElementsPerPage={MaxElementsPerPage}
               />
-              <Pagination>
-                <Icon onClick={() => handlePagination("prev")}>
-                  <LeftIcon />
-                  Prev
-                </Icon>
-                Page {page}
-                <Icon onClick={() => handlePagination("next")}>
-                  Next
-                  <RightIcon />
-                </Icon>
-              </Pagination>
+              {PaginationElement}
             </>
           ) : null}
         </List>

@@ -34,28 +34,35 @@ const Price = styled.div`
   font-size: 1.1rem;
 `;
 
-function SearchResults({ data }) {
+function SearchResults({ data, currentIndex, MaxElementsPerPage }) {
+  let productsList = [];
+  let item;
+
+  if (data.products.length > 0) {
+    console.log(data)
+    const arrayLoopBoundary = (currentIndex + MaxElementsPerPage) > data.limit ? data.limit : (currentIndex + MaxElementsPerPage);
+    for (let i = currentIndex; i < arrayLoopBoundary; i++) {
+      item = data.products[i];
+      productsList.push(
+        <Repo key={item.id}>
+          <StyledLink
+            to={{
+              pathname: `/info/${item.id}`,
+              state: { item: item },
+            }}
+          >
+            {item.title}
+          </StyledLink>
+          <Description>{item.description}</Description>
+          <Price>R$ {item.price} ({item.stock} available)</Price>
+        </Repo>
+      );
+    }
+  }
   return (
     <Results>
       <List>
-        {(data?.products || []).map(
-          (item) => {
-            return (
-              <Repo key={item.id}>
-                <StyledLink
-                  to={{
-                    pathname: `/info/${item.id}`,
-                    state: { item: item },
-                  }}
-                >
-                {item.title}
-                </StyledLink>
-                <Description>{item.description}</Description>
-                <Price>R$ {item.price} ({item.stock} available)</Price>
-              </Repo>
-            );
-          }
-        )}
+        {productsList}
       </List>
     </Results>
   );
