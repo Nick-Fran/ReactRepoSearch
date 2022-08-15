@@ -66,7 +66,7 @@ function SearchBar({ value = "", placeholder, onSubmit }) {
   };
 
   const handleSubmit = () => {
-    console.log("SearchBar|input is:", input);
+    //console.log("SearchBar|input is:", input);
     routeChange(input);
     onSubmit(input);
   };

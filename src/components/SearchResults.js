@@ -39,7 +39,7 @@ function SearchResults({ data, currentIndex, MaxElementsPerPage }) {
   let item;
 
   if (data.products.length > 0) {
-    console.log(data)
+    //console.log(data)
     const arrayLoopBoundary = (currentIndex + MaxElementsPerPage) > data.limit ? data.limit : (currentIndex + MaxElementsPerPage);
     for (let i = currentIndex; i < arrayLoopBoundary; i++) {
       item = data.products[i];
