@@ -92,11 +92,14 @@ const Pagination = styled(DivFlexCenter)`
   font-size: 0.8rem;
 `;
 
+let param = "";
+
 function Search() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [page, setPage] = useState(1);
+  const [queryParam, setQueryParam] = useState();
 
   const MaxElementsPerPage = 5;
 
@@ -106,15 +109,22 @@ function Search() {
   const fetchData = useCallback(
     () => {
       setLoading(true);
-      
+      setQueryParam(param)
+      console.log("Search|fetchData|q retrieved is:", q)
+
       let url = `https://dummyjson.com/products`;
+
+      if(param){
+        console.log("Search|fetchData|param value:", param);
+        url = `https://dummyjson.com/products/search?q=` + encodeURIComponent(param);
+      }
 
       fetch(url)
         .then((response) => response.json())
         .then((data) => {
           setData(data);
           setLoading(false);
-          //console.log("Data retrieved is:", data)
+          //console.log("Search|fetchData|Data retrieved is:", data)
         })
         .catch((error) => {
           console.error(error);
@@ -125,9 +135,20 @@ function Search() {
     [page, q]
   );
 
+  const handleHomeButton = () => {
+    console.log("Search|handleHomeButton");
+    param = ""
+    fetchData();
+  }
+
   const handleSubmit = (input) => {
     setPage(1);
-    fetchData();
+    console.log("Search|handleSubmit|input is:", input);
+    if(input){
+      param = input;
+    }else{
+      param = ""
+    }
   };
 
   const handlePagination = (direction) => {
@@ -151,7 +172,7 @@ function Search() {
   return (
     <Container id="Search">
       <Header>
-        <IconLink to={`/`}>
+        <IconLink to={`/`} onClick={handleHomeButton}>
           <GoHome />
         </IconLink>
         <SearchBar placeholder="Search..." onSubmit={handleSubmit} value={q} />

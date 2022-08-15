@@ -19,7 +19,6 @@ export default function App() {
         <Switch>
           <Route exact path="/error" component={Error} />
           <Route path="/info/*" component={ProductDetail} />
-          <Route path="/search/:q" component={Search} />
           <Route exact path="/" component={Search} />
           <Redirect to="/" />
         </Switch>

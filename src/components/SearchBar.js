@@ -61,11 +61,12 @@ function SearchBar({ value = "", placeholder, onSubmit }) {
   //trigger handleSubmit only when enter button is pressed within search input field or search icon is clicked
   const handleKeyPress = (e) => {
     if (e.key === "Enter" || e.currentTarget.title === "search") {
-      input ? handleSubmit() : alert("Please enter search term to get results");
+      handleSubmit()
     }
   };
 
   const handleSubmit = () => {
+    console.log("SearchBar|input is:", input);
     routeChange(input);
     onSubmit(input);
   };
