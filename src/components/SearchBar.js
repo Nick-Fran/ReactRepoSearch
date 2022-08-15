@@ -54,7 +54,7 @@ function SearchBar({ value = "", placeholder, onSubmit }) {
   };
 
   const routeChange = (input) => {
-    let path = `/search/${input}`;
+    let path = `/search?q=${input}`;
     history.push(path);
   };
 

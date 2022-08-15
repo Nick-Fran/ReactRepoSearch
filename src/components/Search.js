@@ -4,7 +4,7 @@ import SearchBar from "./SearchBar";
 import SearchResults from "./SearchResults";
 import { Spinner } from "react-spinners-css";
 import { withRouter, Link, useParams, Redirect } from "react-router-dom";
-import { FaGithub } from "react-icons/fa";
+import { GoHome } from "react-icons/go";
 import {
   GoChevronLeft as LeftIcon,
   GoChevronRight as RightIcon,
@@ -96,7 +96,6 @@ function Search() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
-  const [filteredResults, setFilteredResults] = useState(null);
   const [page, setPage] = useState(1);
 
   const MaxElementsPerPage = 5;
@@ -109,6 +108,7 @@ function Search() {
       setLoading(true);
       
       let url = `https://dummyjson.com/products`;
+
       fetch(url)
         .then((response) => response.json())
         .then((data) => {
@@ -126,16 +126,13 @@ function Search() {
   );
 
   const handleSubmit = (input) => {
-    setFilteredResults(null);
     setPage(1);
     fetchData();
   };
 
   const handlePagination = (direction) => {
     let offset = page * 31;
-    let results = filteredResults
-      ? filteredResults?.totalCount
-      : data?.totalCount || 0;
+    let results = data.limit;
     if (direction === "prev" && page >= 2) {
       setPage(page - 1);
     }
@@ -144,15 +141,18 @@ function Search() {
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, [q, page, fetchData]);
+  useEffect(
+    () => {
+      fetchData();
+    },
+    [q, page, fetchData]
+  );
 
   return (
     <Container id="Search">
       <Header>
         <IconLink to={`/`}>
-          <FaGithub />
+          <GoHome />
         </IconLink>
         <SearchBar placeholder="Search..." onSubmit={handleSubmit} value={q} />
       </Header>
