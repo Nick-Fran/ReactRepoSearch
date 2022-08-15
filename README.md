@@ -51,11 +51,9 @@ A simple 3 page design that consists of a landing page, search results, and deta
 
 ## Components
 
-- Dropdown
 - Error
-- Filters
 - Landing
-- RepoDetails
+- ProductDetails
 - Search
 - SearchBar
 - SearchResults

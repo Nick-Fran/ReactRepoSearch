@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "styled-components";
 import { withRouter, Link } from "react-router-dom";
-import { GoStar as StarIcon, GoRepoForked as ForkIcon } from "react-icons/go";
 
 const Results = styled.div`
   display: flex;
@@ -31,62 +30,28 @@ const Description = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
 `;
-const Stars = styled.div`
-  font-size: 0.7rem;
-`;
-const Forks = styled.div`
-  font-size: 0.7rem;
-`;
-const Language = styled.div``;
-const UpdatedAt = styled.div``;
-const Details = styled.div`
-  font-size: 0.7rem;
-  display: flex;
-  gap: 1rem;
-  line-height: 1.25rem;
+const Price = styled.div`
+  font-size: 1.1rem;
 `;
 
-function SearchResults({ filteredResults, data }) {
+function SearchResults({ data }) {
   return (
     <Results>
       <List>
-        {(filteredResults ? filteredResults?.items : data?.items || []).map(
-          (r) => {
-            const {
-              forks_count,
-              stargazers_count,
-              language,
-              updated_at,
-              full_name,
-              id,
-              description,
-            } = r;
-            let updatedAt = new Date(updated_at).toDateString();
+        {(data?.products || []).map(
+          (item) => {
             return (
-              <Repo key={id}>
+              <Repo key={item.id}>
                 <StyledLink
                   to={{
-                    pathname: `/repository/${id}`,
-                    state: { data: r, updatedAt: updatedAt },
+                    pathname: `/info/${item.id}`,
+                    state: { item: item },
                   }}
                 >
-                  {full_name}
+                {item.title}
                 </StyledLink>
-                {description && <Description>{r.description}</Description>}
-                <Details>
-                  <Stars>
-                    <StarIcon />
-                    {stargazers_count || 0}
-                  </Stars>
-                  <Forks>
-                    <ForkIcon />
-                    {forks_count || 0}
-                  </Forks>
-                  {language && <Language>{language || ""}</Language>}
-                  <UpdatedAt>
-                    {updatedAt ? `Updated ${updatedAt}` : ""}
-                  </UpdatedAt>
-                </Details>
+                <Description>{item.description}</Description>
+                <Price>R$ {item.price} ({item.stock} available)</Price>
               </Repo>
             );
           }

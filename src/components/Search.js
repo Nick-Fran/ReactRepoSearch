@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import styled, { css } from "styled-components";
 import SearchBar from "./SearchBar";
-import Filters from "./Filters";
 import SearchResults from "./SearchResults";
 import { Spinner } from "react-spinners-css";
 import { withRouter, Link, useParams, Redirect } from "react-router-dom";
@@ -10,8 +9,6 @@ import {
   GoChevronLeft as LeftIcon,
   GoChevronRight as RightIcon,
 } from "react-icons/go";
-import Dropdown from "./Dropdown";
-import { sortLanguages } from "../globals/utils";
 import { DivFlexCenter } from "../globals/styles";
 
 const Container = styled.div`
@@ -89,17 +86,6 @@ const Loading = styled(DivFlexCenter)`
   left: 50%;
 `;
 
-const Dropdowns = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-
-  @media screen and (max-width: 800px) {
-    gap: 0;
-    justify-content: space-between;
-  }
-`;
-
 const Pagination = styled(DivFlexCenter)`
   gap: 2rem;
   padding: 1rem;
@@ -111,50 +97,24 @@ function Search() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [filteredResults, setFilteredResults] = useState(null);
-  const [selectedSort, setSelectedSort] = useState("");
-  const [selectedFilter, setSelectedFilter] = useState("");
   const [page, setPage] = useState(1);
-  const [filterActive, setFilterActive] = useState(false);
 
-  //Github Sort Options
-  const sortOptions = [
-    { label: "Best match", sort: "" },
-    { label: "Most stars", sort: "stars" },
-    { label: "Fewest stars", sort: "stars", order: "asc" },
-    { label: "Most forks", sort: "forks" },
-    { label: "Fewest forks", sort: "forks", order: "asc" },
-  ];
+  const MaxElementsPerPage = 5;
 
   //get params from url
   let { q } = useParams();
 
   const fetchData = useCallback(
-    ({ input, sort, order, perPage, pg }) => {
+    () => {
       setLoading(true);
-
-      //Query Parameters - Reference: https://docs.github.com/en/rest/reference/repos
-      const queryTerm = `q=` + encodeURIComponent(input || q);
-      const querySort = `${sort ? `&sort=${sort}` : ""}`;
-      const queryOrder = `${order ? `&order=${order}` : ""}`;
-      const queryPerPage = `&per_page=${perPage || 30}`;
-      const queryPage = `&page=${page || 1}`;
-      const queryString =
-        queryTerm + querySort + queryOrder + queryPerPage + queryPage;
-
-      //console.log("Github API Search Query: ", queryString);
-      let url = `https://api.github.com/search/repositories?${queryString}`;
+      
+      let url = `https://dummyjson.com/products`;
       fetch(url)
         .then((response) => response.json())
         .then((data) => {
-          let sortedLanguages = sortLanguages(data);
-          //add any option as default for dropdown
-          sortedLanguages.unshift({ label: "Any" });
-          setData({
-            totalCount: data.total_count,
-            items: data.items,
-            languages: sortedLanguages,
-          });
+          setData(data);
           setLoading(false);
+          //console.log("Data retrieved is:", data)
         })
         .catch((error) => {
           console.error(error);
@@ -168,24 +128,7 @@ function Search() {
   const handleSubmit = (input) => {
     setFilteredResults(null);
     setPage(1);
-    fetchData({ input: input });
-  };
-
-  const handleFilter = (filter) => {
-    //disables sort dropdown when filter is active (sort requires api call and will not align with filtering options)
-    if (filter === "clear" || filter === "Any") {
-      setFilterActive(false);
-      setFilteredResults(data);
-    } else {
-      setFilterActive(true);
-      let filteredResults = data?.items?.filter(
-        (data) => data.language === filter
-      );
-      setFilteredResults({
-        totalCount: filteredResults.length,
-        items: filteredResults,
-      });
-    }
+    fetchData();
   };
 
   const handlePagination = (direction) => {
@@ -202,7 +145,7 @@ function Search() {
   };
 
   useEffect(() => {
-    fetchData({ input: q });
+    fetchData();
   }, [q, page, fetchData]);
 
   return (
@@ -214,36 +157,11 @@ function Search() {
         <SearchBar placeholder="Search..." onSubmit={handleSubmit} value={q} />
       </Header>
       <ResultsWrapper>
-        <Filters
-          data={data}
-          handleFilter={handleFilter}
-          setFilterActive={setFilterActive}
-        />
         <List>
-          <Dropdowns>
-            <Dropdown
-              onChange={handleFilter}
-              selected={selectedFilter}
-              setSelected={setSelectedFilter}
-              setFilterActive={setFilterActive}
-              options={data ? data.languages : null}
-              label={"Languages"}
-            />
-            <Dropdown
-              onChange={fetchData}
-              selected={selectedSort}
-              setSelected={setSelectedSort}
-              options={sortOptions}
-              disabled={filterActive}
-              label={"Sort"}
-            />
-          </Dropdowns>
           <TotalResults>
-            {filteredResults
-              ? filteredResults?.totalCount
-              : data?.totalCount || 0}{" "}
-            results
+            {data? data.limit : 0}{" "}results
           </TotalResults>
+
           {loading ? (
             <Loading>
               <Spinner color={`#cf9fff`} />
@@ -251,7 +169,6 @@ function Search() {
           ) : data ? (
             <>
               <SearchResults
-                filteredResults={filteredResults}
                 fetchData={fetchData}
                 data={data}
               />

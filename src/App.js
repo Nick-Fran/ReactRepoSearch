@@ -7,9 +7,8 @@ import {
   Redirect,
   BrowserRouter as Router,
 } from "react-router-dom";
-import Landing from "./components/Landing";
 import Search from "./components/Search";
-import RepoDetail from "./components/RepoDetail";
+import ProductDetail from "./components/ProductDetail";
 import Error from "./components/Error";
 
 export default function App() {
@@ -19,9 +18,9 @@ export default function App() {
         <GlobalStyle />
         <Switch>
           <Route exact path="/error" component={Error} />
-          <Route path="/repository/*" component={RepoDetail} />
+          <Route path="/info/*" component={ProductDetail} />
           <Route path="/search/:q" component={Search} />
-          <Route exact path="/" component={Landing} />
+          <Route exact path="/" component={Search} />
           <Redirect to="/" />
         </Switch>
       </ThemeProvider>

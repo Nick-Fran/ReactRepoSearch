@@ -69,14 +69,6 @@ const NameLink = styled.a`
   }
 `;
 
-const DetailMed = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 1rem;
-  font-size: 1rem;
-`;
-
 const Detail = styled.div`
   display: flex;
   align-items: center;
@@ -84,17 +76,17 @@ const Detail = styled.div`
   gap: 1rem;
   font-size: 1rem;
 `;
-const DetailLink = styled.a`
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 1rem;
-  text-decoration: none;
-  color: black;
 
-  &:hover {
-    text-decoration: underline;
-  }
+const Square = styled.div`
+  height: 200px;
+`;
+
+const Image = styled.img`
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  max-height: 100%;
+  max-width: 100%;
 `;
 
 const Buttons = styled(DivFlexCenter)``;
@@ -117,74 +109,28 @@ const BackButton = styled.div`
   `}
 `;
 
-function RepoDetail() {
+function ProductDetail() {
   const location = useLocation();
   const history = useHistory();
   if (!location.state) {
     return <Redirect to="/error" />;
   }
-  const { data, updatedAt } = location.state;
-  const {
-    name,
-    description,
-    language,
-    stargazers_count,
-    forks_count,
-    watchers_count,
-    open_issues_count,
-    license,
-    owner,
-    visibility,
-    svn_url,
-  } = data;
+  const { item } = location.state;
+  
   return (
     <Container>
-      <Header> Repository Details:</Header>
+      <Header> Product Details</Header>
       <Section>
-        <NameLink href={svn_url} target="_blank" rel="noopener noreferrer">
-          Name: {name}
-        </NameLink>
-        <DetailMed>About: {description}</DetailMed>
-        <Detail>
-          <VisibilityIcon />
-          {visibility}
-        </Detail>
-        <DetailLink
-          href={owner.html_url}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <UserIcon />
-          {owner.login}
-        </DetailLink>
-        <Detail>
-          <LanguageIcon />
-          {language ? language : "n/a"}
-        </Detail>
-        <Detail>
-          <StarIcon />
-          {`${stargazers_count} star${stargazers_count && "s"}`}
-        </Detail>
-        <Detail>
-          <ForkIcon />
-          {`${forks_count} fork${forks_count && "s"}`}
-        </Detail>
-        <Detail>
-          <WatchIcon />
-          {`${watchers_count} follower${watchers_count && "s"}`}
-        </Detail>
-        <Detail>
-          <IssuesIcon />
-          {`${open_issues_count} open issue${open_issues_count > 0 ? "" : "s"}`}
-        </Detail>
-        <Detail>
-          <LicenseIcon />
-          {license ? license.name : "n/a"}
-        </Detail>
-        <Detail>
-          <UpdatedIcon />
-          {updatedAt ? updatedAt : "n/a"}
-        </Detail>
+        <NameLink>{item.title}</NameLink>
+        <Square><Image src={item.images[0]} alt={item.title}></Image></Square>
+      </Section>
+      <Section>
+        <Detail>Description: {item.description}</Detail>
+        <Detail>Price: R${item.price}</Detail>
+        <Detail>Category: {item.category}</Detail>
+        <Detail>Brand: {item.brand}</Detail>
+        <Detail>Rating: {item.rating}</Detail>
+        <Detail>Available in stock: {item.stock}</Detail>
       </Section>
       <Buttons>
         <BackButton
@@ -193,11 +139,11 @@ function RepoDetail() {
           }}
         >
           <BiArrowBack />
-          Back to Results
+          Back to Products
         </BackButton>
       </Buttons>
     </Container>
   );
 }
 
-export default withRouter(RepoDetail);
+export default withRouter(ProductDetail);
